@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <meta http-equiv='X-UA-Compatible' content='IE=Edge' />
     <meta charset="utf-8">
     <title>Abhijit's page</title>
+    <meta name='viewport'
+          content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/>
+    <link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/traffic-incidents.css'/>
+<link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/routing.css'/>
+<link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/poi.css'/>
     <style media="screen">
     /* Style the tab */
+.html{
+    height=100%;
+}
 .tab {
   overflow: hidden;
   border: 3px solid #ccc;
@@ -105,9 +114,10 @@ body{
      </div>
      <hr>
     <div class="tab">
-    <button class="tablinks" onclick="openCity(event, 'About Us')">About Us</button>
     <button class="tablinks" onclick="openCity(event, 'The problem about self-isolation')">self isolation and it's problem</button>
     <button class="tablinks" onclick="openCity(event, 'Settings')">Settings</button>
+    <button class="tablinks" onclick="openCity(event, 'About Us')">About Us</button>
+    <button class="tablinks" onclick="openCity(event, 'Map')">Solution w/ Map</button>
 </div>
 <div id="About Us" class="tabcontent">
     <h2> About us </h2>
@@ -126,6 +136,9 @@ body{
      This is a hug problem we have, but how do we combat this?
      </p>
 </div>
+<div id="Map" class="tabcontent">
+
+</div>
 <div id="Settings" class="tabcontent">
   <h2>Settings</h2>
   <hr>
@@ -135,8 +148,11 @@ body{
 </div>
 </div>
 </div>
-<script src="http://www.dukelearntoprogram.com/course1/common/js/image/SimpleImage.js">
+<div id='map' class='map'></div>
 </script>
+<link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/maps.css'>
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/maps-web.min.js"></script>
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/services/services-web.min.js"></script>
 <script type="text/javascript">
   var military=false;
     function showTime(){
@@ -205,8 +221,14 @@ tablinks[i].className = tablinks[i].className.replace(" active", "");
 document.getElementById(cityName).style.display = "block";
 evt.currentTarget.className += " active";
 }
-var image = null;
-
+var map = tt.map({
+    key: '<your-tomtom-maps-API-key>',
+    container: 'map',
+    style: 'tomtom://vector/1/basic-main',
+    dragPan: !isMobileOrTablet()
+});
+map.addControl(new tt.FullscreenControl());
+map.addControl(new tt.NavigationControl());
 </script>
   </body>
 </html>
