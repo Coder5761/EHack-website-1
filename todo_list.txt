@@ -1,2 +1,2 @@
-1. show a map using tomtom
-2. draw one circular marker whith a digit inside
+1. show a map (using tomtom)
+2. draw one circular marker whith a digit inside (using tomtom)
