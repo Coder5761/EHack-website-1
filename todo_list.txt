@@ -1,5 +1,4 @@
 1.DONE show a map (https://developer.tomtom.com/maps-sdk-web-js/functional-examples#examples,map,vector-map.html) 
 2.IN PROGRESS draw one circular marker whith a digit inside (https://developer.tomtom.com/maps-sdk-web-js/functional-examples#examples,map,markers-clustering.html) 
 3.DONE get all possible data about any segment on the road (https://developer.tomtom.com/maps-sdk-web-js/functional-examples#examples,map,traffic-flow-segments.html) 
-4.NEED TO FIX Web app use too much ram, probably doing something in not the right way or my computer is a potato.
-5. simulate traffic flow from one marker to another for some roads between them. Add area property to markers and brute force roads inside it? 
+4. simulate traffic flow from one marker to another for some roads between them. Add area property to markers and brute force roads inside it? 
