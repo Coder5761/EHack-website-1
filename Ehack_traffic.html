@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
-<head>
+  <head>
     <meta http-equiv='X-UA-Compatible' content='IE=Edge' />
     <meta charset="utf-8">
     <title>Hackaton Project: How Traffic effects Self-Isolation and how it's helpful</title>
-    <meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <link rel='stylesheet' type='text/css'
-        href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/traffic-incidents.css' />
-    <link rel='stylesheet' type='text/css'
-        href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/routing.css' />
-    <link rel='stylesheet' type='text/css'
-        href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/poi.css' />
+    <meta name='viewport'
+          content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'/>
+    <link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/traffic-incidents.css'/>
+<link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/routing.css'/>
+<link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/css-styles/poi.css'/>
     <link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/maps.css'>
     <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/maps-web.min.js'></script>
     <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/services/services-web.min.js'></script>
@@ -23,659 +20,447 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
     <link rel='stylesheet' type='text/css' href='index.css'>
     <style media="screen">
-        /* Style the tab */
-        .tab {
-            overflow: hidden;
-            border: 3px solid #ccc;
-            background-color: #f1f1f1;
-        }
+    /* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 3px solid #ccc;
+  background-color: #f1f1f1;
+}
+canvas{
+  height: 1000px;
+  border: 4px solid grey;
+}
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
 
-        canvas {
-            height: 1000px;
-            border: 4px solid grey;
-        }
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+  text-transform: uppercase;
+  transform-origin: center;
+}
 
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-        }
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+  transform:translateY(25%);
+  transition: 0.3s;
+}
+.tab button:active:hover {
+  transform:translateY(50%);
+  background-color: #bbb;
+}
 
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            background-color: #ddd;
-            text-transform: uppercase;
-            transform-origin: center;
-        }
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 3px solid #ccc;
+  border-top: none;
+  background-color: #d2d2d2
+}
 
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #ccc;
-            transform: translateY(25%);
-            transition: 0.3s;
-        }
+#Map{
+    height:1000px;
+    width:1500px;
+}
 
-        .tab button:active:hover {
-            transform: translateY(50%);
-            background-color: #bbb;
-        }
+body{
+  font-family: arial;
+  margin: 30px;
+  background-color: #f43300;
+  animation-duration: 100s;
+  animation-name: backgroundColor;
+  animation-direction: alternate;
+}
 
-        /* Style the tab content */
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-            border: 3px solid #ccc;
-            border-top: none;
-            background-color: #d2d2d2
-        }
-
-        #Map {
-            height: 1000px;
-            width: 1500px;
-        }
-
-        body {
-            font-family: arial;
-            margin: 30px;
-            background-color: #f43300;
-            animation-duration: 100s;
-            animation-name: backgroundColor;
-            animation-direction: alternate;
-        }
-
-        .clock {
-            position: absolute;
-            top: 5%;
-            left: 40%;
-            transform: translateX(50%) translateY(50%);
-            color: #e6667f;
-            font-size: 20px;
-            font-family: 'Josefin Sans', sans-serif;
-            letter-spacing: 7px;
-            -webkit-transition: 0.25s;
+.clock {
+   position: absolute;
+   top: 5%;
+   left: 40%;
+   transform: translateX(50%) translateY(50%);
+   color: #e6667f;
+   font-size: 20px;
+   font-family: 'Josefin Sans', sans-serif;
+   letter-spacing: 7px;
+   -webkit-transition: 0.25s;
 
 
 
-        }
+}
 
-        .clock:hover {
-            transform: translateY(-2000px);
-            transform: translateX(-300px);
-            transform-origin: center;
-            transition: 1.5s;
-            font-size: 100px;
-            color: #fed383;
-        }
+.moveBorder{
+  width: 1390px;
+  height: 100px;
+  border: 2px solid #aaa;
+  border-radius: 20px;
+}
 
-        .moveBorder {
-            width: 1390px;
-            height: 100px;
-            border: 2px solid #aaa;
-            border-radius: 20px;
-        }
+@keyframes backgroundColor {
+  from{background-color: #012345}
+  to{background-color: #abcdef}
+}
 
-        @keyframes backgroundColor {
-            from {
-                background-color: #012345
-            }
-
-            to {
-                background-color: #abcdef
-            }
-        }
     </style>
-</head>
-
-<body>
+  </head>
+  <body>
     <h1>Hackaton problems</h1>
     <div id="MyClockDisplay" class="clock" onload="showTime()">
-    </div>
-    <hr>
+     </div>
+     <hr>
     <div class="tab">
-        <button class="tablinks" onclick="openCity(event, 'The problem about self-isolation')">self isolation and it's
-            problem</button>
-        <button class="tablinks" onclick="openCity(event, 'Settings')">Settings</button>
-        <button class="tablinks" onclick="openCity(event, 'About Us')">About Us</button>
-        <button class="tablinks" onclick="openCity(event, 'Map')">Solution w/ Map</button>
-    </div>
-    <div id="About Us" class="tabcontent">
-        <h2> About us </h2>
-        <p></p>
-    </div>
-    <div id="The problem about self-isolation" class="tabcontent">
-        <h2> The problem about Traffic </h2>
-        <p>No Self-Isolation is a big problem at this time of day, as people are sometimes infected, infecting others
-            and destroying balance.</p>
-        <p>There are ways no self-isolation is bad such as:</p>
-        <ul>
-            <li>Hurting yourself for no reason</li>
-            <li>Accidently hurting someone else</li>
-            <li>Infecting others/Getting infected</li>
-            <li>Squished places on public places</li>
-            <ul>
-                <p>
-                    This is a hug problem we have, but how do we combat this?
-                </p>
-    </div>
-    <div id="Settings" class="tabcontent">
-        <h2>Settings</h2>
-        <hr>
-        <h3>Time</h3>
-        <input type="button" class="time" value="24 hour" onclick="twentyFourHourChange()">
-        <input type="button" class="time" value="regular" onclick="regular()">
-    </div>
-    <div id="Map" class="tabcontent">
-
-        <div id='map' class='map'>
-            <div class='tt-overlay-panel -left-top -medium js-foldable'>
-                <div class='tt-form'>
-                    <label for='trafficStyle' class='tt-form-label tt-spacing-top-24'>
-                        <span>Traffic flow style</span>
-                        <select id='trafficStyle' name='trafficStyle' class='js-style-select tt-select'>
-                            <option value='relative0' selected>relative0</option>
-                            <option value='relative0-dark'>relative0-dark</option>
-                            <option value='absolute'>absolute</option>
-                            <option value='relative'>relative</option>
-                            <option value='relative-delay'>relative-delay</option>
-                            <option value='reduced-sensitivity'>reduced-sensitivity</option>
-                        </select>
-                    </label>
-                    <label class='tt-form-label'>
-                        <span>Units of measurement</span>
-                        <div class='tt-inline-input-group'>
-                            <input name='unit' id='KMPH' class='tt-radio' type='radio' checked='true' />
-                            <label for='KMPH' class='tt-label'>metric</label>
-                            <input name='unit' id='MPH' class='tt-radio' type='radio' />
-                            <label for='MPH' class='tt-label'>imperial</label>
-                        </div>
-                    </label>
-                </div>
+    <button class="tablinks" onclick="openCity(event, 'The problem about self-isolation')">self isolation and it's problem</button>
+    <button class="tablinks" onclick="openCity(event, 'Settings')">Settings</button>
+    <button class="tablinks" onclick="openCity(event, 'About Us')">About Us</button>
+    <button class="tablinks" onclick="openCity(event, 'Map')">Solution w/ Map</button>
+</div>
+<div id="About Us" class="tabcontent">
+    <h2> About us </h2>
+    <p></p>
+</div>
+<div id="The problem about self-isolation" class="tabcontent">
+    <h2> The problem about Traffic </h2>
+    <p>No Self-Isolation is a big problem at this time of day, as people are sometimes infected, infecting others and destroying balance.</p>
+    <p>There are ways no self-isolation is bad such as:</p>
+    <ul>
+     <li>Hurting yourself for no reason</li>
+     <li>Accidently hurting someone else</li>
+     <li>Infecting others/Getting infected</li>
+     <li>Squished places on public places</li>
+     <ul>
+    <p>
+    This is a hug problem we have, but how do we combat this?
+    </p>
+</div>
+<div id="Settings" class="tabcontent">
+  <h2>Settings</h2>
+  <hr>
+  <h3>Time</h3>
+  <input type="button" class="time" value="24 hour" onclick="twentyFourHourChange()">
+  <input type="button" class="time" value="regular" onclick="regular()">
+</div>
+<div id="Map" class="tabcontent">
+    
+    <div id='map' class='map'>
+        <div class='tt-overlay-panel -left-top -medium js-foldable'>
+            <div class='tt-form'>
+                <label for='trafficStyle' class='tt-form-label tt-spacing-top-24'>
+                    <span>Traffic flow style</span>
+                    <select id='trafficStyle' name='trafficStyle' class='js-style-select tt-select'>
+                        <option value='relative0' selected>relative0</option>
+                        <option value='relative0-dark'>relative0-dark</option>
+                        <option value='absolute'>absolute</option>
+                        <option value='relative'>relative</option>
+                        <option value='relative-delay'>relative-delay</option>
+                        <option value='reduced-sensitivity'>reduced-sensitivity</option>
+                    </select>
+                </label>
+                <label class='tt-form-label'>
+                    <span>Units of measurement</span>
+                    <div class='tt-inline-input-group'>
+                        <input name='unit' id='KMPH' class='tt-radio' type='radio' checked='true' />
+                        <label for='KMPH' class='tt-label'>metric</label>
+                        <input name='unit' id='MPH' class='tt-radio' type='radio' />
+                        <label for='MPH' class='tt-label'>imperial</label>
+                    </div>
+                </label>
             </div>
         </div>
     </div>
-    </div>
-    </div>
+</div>
+</div>
+</div>
 
-    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/maps-web.min.js"></script>
-    <script type="text/javascript">
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.63.0/maps/maps-web.min.js"></script>
+<script type="text/javascript">
+  var military=false;
+    function showTime(){
+   var date = new Date();
+   var y = date.getFullYear();
+   var d1 = date.getDate();
+   var d = date.getMonth()+1;
+   var h = date.getHours(); // 0 - 23
+   var saveh=date.getHours();
+   // var h = 23; // 0 - 23
+   // var saveh=23;
+   var m = date.getMinutes(); // 0 - 59
+   var s = date.getSeconds(); // 0 - 59
+   var session = "PM";
 
-        //TIME
-        var military = false;
-        function showTime() {
-            var date = new Date();
-            var y = date.getFullYear();
-            var d1 = date.getDate();
-            var d = date.getMonth() + 1;
-            var h = date.getHours(); // 0 - 23
-            var saveh = date.getHours();
-            // var h = 23; // 0 - 23
-            // var saveh=23;
-            var m = date.getMinutes(); // 0 - 59
-            var s = date.getSeconds(); // 0 - 59
-            var session = "PM";
+   if(military==false){
+     if(saveh < 12 && saveh>0){
+          h+=0;
+         session = "AM";
+     }
+     if(saveh>12 &&saveh<23) {
+     session = "PM";
+     h -=12;
+     }
+ }
+  else if (military==true) {
+    session="";
+    h=saveh;
+  }
+   h = (h < 10) ? "0" + h : h;
+   m = (m < 10) ? "0" + m : m;
+   s = (s < 10) ? "0" + s : s;
 
-            if (military == false) {
-                if (saveh < 12 && saveh > 0) {
-                    h += 0;
-                    session = "AM";
-                }
-                if (saveh > 12 && saveh < 23) {
-                    session = "PM";
-                    h -= 12;
-                }
-            }
-            else if (military == true) {
-                session = "";
-                h = saveh;
-            }
-            h = (h < 10) ? "0" + h : h;
-            m = (m < 10) ? "0" + m : m;
-            s = (s < 10) ? "0" + s : s;
+   var time = "Date:  "+d + "/"+ d1 +"/"+y+ "  " +  "Time:" + "  " + h + ":" + m + ":" + s + " " + session;
+   document.getElementById("MyClockDisplay").innerText = time;
+   document.getElementById("MyClockDisplay").textContent = time;
 
-            var time = "Date:  " + d + "/" + d1 + "/" + y + "  " + "Time:" + "  " + h + ":" + m + ":" + s + " " + session;
-            document.getElementById("MyClockDisplay").innerText = time;
-            document.getElementById("MyClockDisplay").textContent = time;
+   setTimeout(showTime, 1000);
+   }
+showTime();
 
-            setTimeout(showTime, 1000);
+function twentyFourHourChange(){
+  military=true;
+}
+function regular(){
+  military=false;
+}
+
+function openCity(evt, cityName) {
+// Declare all variables
+var i, tabcontent, tablinks;
+
+// Get all elements with class="tabcontent" and hide them
+tabcontent = document.getElementsByClassName("tabcontent");
+for (i = 0; i < tabcontent.length; i++) {
+tabcontent[i].style.display = "none";
+}
+
+// Get all elements with class="tablinks" and remove the class "active"
+tablinks = document.getElementsByClassName("tablinks");
+for (i = 0; i < tablinks.length; i++) {
+tablinks[i].className = tablinks[i].className.replace(" active", "");
+}
+
+// Show the current tab, and add an "active" class to the button that opened the tab
+document.getElementById(cityName).style.display = "block";
+evt.currentTarget.className += " active";
+}
+
+var baseStyle = 'tomtom://vector/1/',
+    config = {
+        key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
+        style: baseStyle + 'relative0',
+        refresh: 30000
+    },
+    initMapCenter = [-95.3698, 29.7604],
+    maxZoomLevel = 18,
+    map = tt.map({
+        key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
+        center: initMapCenter,
+        container: 'map',
+        minZoom: 5,
+        maxZoom: maxZoomLevel,
+        style: baseStyle + 'basic-main',
+        zoom: 35,
+        dragPan: !isMobileOrTablet()
+    });
+var errorHint = new InfoHint('error', 'bottom-center', 5000).addTo(document.getElementById('map')),
+    formatters = Formatters,
+    isPositionIncorrect,
+    popupElement = null,
+    popupPosition = initMapCenter,
+    roadType = {
+        'FRC0': 'Motorway, freeway or other major road',
+        'FRC1': 'Major road, less important than a motorway',
+        'FRC2': 'Other major road',
+        'FRC3': 'Secondary road',
+        'FRC4': 'Local connecting road',
+        'FRC5': 'Local road of high importance',
+        'FRC6': 'Local road',
+        'FRC7': 'Local road of minor importance',
+        'FRC8': 'Other road'
+    },
+    trafficFlowPosition,
+    units = {
+        'KMPH': ' km/h',
+        'MPH': ' mph'
+    },
+    unitsToSelect = document.querySelectorAll('input[name=unit]'),
+    unitValue = 'KMPH';
+new Foldable('.js-foldable', 'top-right');
+map.addControl(new tt.FullscreenControl());
+map.addControl(new tt.NavigationControl());
+map.on('load', handleMapLoad);
+map.on('click', handleTrafficFlowSegmentsRequest);
+map.on('zoomend', handleTrafficFlowSegmentsRequest);
+document.querySelector('#trafficStyle').addEventListener('change', handleTrafficFlowSegmentsRequest);
+function addLayer(routeJson) {
+    map.addLayer({
+        'id': 'flow',
+        'type': 'line',
+        'source': {
+            'type': 'geojson',
+            'data': routeJson
+        },
+        'layout': {
+            'line-cap': 'round'
+        },
+        'paint': {
+            'line-color': '#5A00FF',
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                7, 15,
+                15, 10
+            ]
         }
-        showTime();
-
-        function twentyFourHourChange() {
-            military = true;
+    });
+}
+function cleanMapData() {
+    if (!map.getLayer('flow')) {
+        return;
+    }
+    popupElement.remove();
+    map.removeLayer('flow');
+    map.removeSource('flow');
+}
+function convertToLineGeoJson(points) {
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'LineString',
+            coordinates: points.map(function(point) {
+                return [point.lng, point.lat];
+            })
         }
-        function regular() {
-            military = false;
-        }
-        //!TIME
-
-        function openCity(evt, cityName) {
-            // Declare all variables
-            var i, tabcontent, tablinks;
-
-            // Get all elements with class="tabcontent" and hide them
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-
-            // Get all elements with class="tablinks" and remove the class "active"
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-
-            // Show the current tab, and add an "active" class to the button that opened the tab
-            document.getElementById(cityName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-
-        //TOMTOM
-        var baseStyle = 'tomtom://vector/1/',
-            config = {
-                key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
-                style: baseStyle + 'relative0',
-                refresh: 30000
-            },
-            //London is a capital of Great Britain?
-            initMapCenter = [-0.13389631465156526, 51.510387047712356],
-            maxZoomLevel = 18,
-            map = tt.map({
-                key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
-                center: initMapCenter,
-                container: 'map',
-                minZoom: 2,
-                maxZoom: maxZoomLevel,
-                style: baseStyle + 'basic-main',
-                zoom: 35,
-                dragPan: !isMobileOrTablet()
-            });
-
-        var errorHint = new InfoHint('error', 'bottom-center', 5000).addTo(document.getElementById('map')),
-            formatters = Formatters,
-            isPositionIncorrect,
-            popupElement = null,
-            popupPosition = initMapCenter,
-            roadType = {
-                'FRC0': 'Motorway, freeway or other major road',
-                'FRC1': 'Major road, less important than a motorway',
-                'FRC2': 'Other major road',
-                'FRC3': 'Secondary road',
-                'FRC4': 'Local connecting road',
-                'FRC5': 'Local road of high importance',
-                'FRC6': 'Local road',
-                'FRC7': 'Local road of minor importance',
-                'FRC8': 'Other road'
-            },
-            trafficFlowPosition,
-            units = {
-                'KMPH': ' km/h',
-                'MPH': ' mph'
-            },
-            unitsToSelect = document.querySelectorAll('input[name=unit]'),
-            unitValue = 'KMPH';
-        new Foldable('.js-foldable', 'top-right');
-        map.addControl(new tt.FullscreenControl());
-        map.addControl(new tt.NavigationControl());
-
-        map.on('load', handleMapLoad);
-        map.on('click', handleTrafficFlowSegmentsRequest);
-        map.on('zoomend', handleTrafficFlowSegmentsRequest);
-        document.querySelector('#trafficStyle').addEventListener('change', handleTrafficFlowSegmentsRequest);
-        function addLayer(routeJson) {
-            map.addLayer({
-                'id': 'flow',
-                'type': 'line',
-                'source': {
-                    'type': 'geojson',
-                    'data': routeJson
-                },
-                'layout': {
-                    'line-cap': 'round'
-                },
-                'paint': {
-                    'line-color': '#5A00FF',
-                    'line-width': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        7, 15,
-                        15, 10
-                    ]
-                }
-            });
-        }
-
-        function cleanMapData() {
-            if (!map.getLayer('flow')) {
-                return;
-            }
-            popupElement.remove();
-            map.removeLayer('flow');
-            map.removeSource('flow');
-        }
-        function convertToLineGeoJson(points) {
-            return {
-                type: 'Feature',
-                geometry: {
-                    type: 'LineString',
-                    coordinates: points.map(function (point) {
-                        return [point.lng, point.lat];
-                    })
-                }
+    };
+}
+function createOptimalPopupPosition(coordinates) {
+    var length = coordinates.length,
+        pin;
+    for (var i = 0; i < length; i++) {
+        if (!pin || coordinates[i].lat > pin.lat) {
+            pin = {
+                lat: coordinates[i].lat,
+                lng: coordinates[i].lng
             };
         }
-
-        function createOptimalPopupPosition(coordinates) {
-            var length = coordinates.length,
-                pin;
-            for (var i = 0; i < length; i++) {
-                if (!pin || coordinates[i].lat > pin.lat) {
-                    pin = {
-                        lat: coordinates[i].lat,
-                        lng: coordinates[i].lng
-                    };
-                }
-            }
-            return pin;
-        }
-        function generatePopupContent(flowSegmentData) {
-            return flowSegmentData.roadClosure ?
-                '<div>' +
-                '<div class="pop-up-result-header">Road Closed</div>' +
-                '</div>' :
-                '<div>' +
-                '<div class="pop-up-result-header">' + roadType[flowSegmentData.frc] + '</div>' +
-                '<div class="pop-up-result-title">Average speed:</div>' +
-                '<div class="pop-up-result-traffic -important">with traffic: ' +
+    }
+    return pin;
+}
+function generatePopupContent(flowSegmentData) {
+    return flowSegmentData.roadClosure ?
+        '<div>' +
+            '<div class="pop-up-result-header">Road Closed</div>' +
+        '</div>' :
+        '<div>' +
+            '<div class="pop-up-result-header">' + roadType[flowSegmentData.frc] + '</div>' +
+            '<div class="pop-up-result-title">Average speed:</div>' +
+            '<div class="pop-up-result-traffic -important">with traffic: ' +
                 formatters.convertToSpeedFormat(flowSegmentData.currentSpeed, units[unitValue]) +
-                '</div>' +
-                '<div class="pop-up-result-traffic">w/o traffic: ' +
+            '</div>' +
+            '<div class="pop-up-result-traffic">w/o traffic: ' +
                 formatters.convertToSpeedFormat(flowSegmentData.freeFlowSpeed, units[unitValue]) +
-                '</div>' +
-                '<div class="pop-up-result-title">Travel time:</div>' +
-                '<div class="pop-up-result-traffic -important">with traffic: ' +
+            '</div>' +
+            '<div class="pop-up-result-title">Travel time:</div>' +
+            '<div class="pop-up-result-traffic -important">with traffic: ' +
                 formatters.formatToDurationTimeString(flowSegmentData.currentTravelTime) +
-                '</div>' +
-                '<div class="pop-up-result-traffic">w/o traffic: ' +
+            '</div>' +
+            '<div class="pop-up-result-traffic">w/o traffic: ' +
                 formatters.formatToDurationTimeString(flowSegmentData.freeFlowTravelTime) +
-                '</div>' +
-                '</div>';
-        }
-
-        function handleTrafficFlowSegmentsRequest(event) {
-            console.count("times of flow_seg_req invocation");
-            if (shouldRequestBeAborted(event)) {
+            '</div>' +
+        '</div>';
+}
+function handleTrafficFlowSegmentsRequest(event) {
+    if (shouldRequestBeAborted(event)) {
+        return;
+    }
+    if (event && event.lngLat) {
+        popupPosition = event.lngLat;
+        trafficFlowPosition = event.lngLat;
+    }
+    popupElement.remove();
+    isPositionIncorrect = false;
+    performTrafficFlowSegmentsData()
+        .then(function(response) {
+            var flowSegmentData = response.flowSegmentData,
+                coordinates = flowSegmentData.coordinates.coordinate,
+                popupContent = generatePopupContent(flowSegmentData),
+                routeJson = convertToLineGeoJson(coordinates);
+            errorHint.hide();
+            cleanMapData();
+            addLayer(routeJson);
+            popupPosition = createOptimalPopupPosition(coordinates);
+            map.panTo(popupPosition);
+            popupElement = showPopup(popupContent);
+        })
+        .catch(function(error) {
+            if (!error || !error.data) {
                 return;
             }
-            if (event && event.lngLat) {
-                popupPosition = event.lngLat;
-                trafficFlowPosition = event.lngLat;
-            }
-            popupElement.remove();
-            isPositionIncorrect = false;
-            performTrafficFlowSegmentsData()
-                .then(function (response) {
-                    var flowSegmentData = response.flowSegmentData,
-                        coordinates = flowSegmentData.coordinates.coordinate,
-                        popupContent = generatePopupContent(flowSegmentData),
-                        routeJson = convertToLineGeoJson(coordinates);
-                    //console.log(routeJson);
-
-                    errorHint.hide();
-                    cleanMapData();
-                    addLayer(routeJson);
-                    popupPosition = createOptimalPopupPosition(coordinates);
-                    map.panTo(popupPosition);
-                    popupElement = showPopup(popupContent);
-                })
-                .catch(function (error) {
-                    if (!error || !error.data) {
-                        return;
-                    }
-                    isPositionIncorrect = true;
-                    cleanMapData();
-                    errorHint.setMessage(error.data.error);
-                });
-
-        }
-        function handleMapLoad() {
-            map.addTier(new tt.TrafficFlowTilesTier(config));
-            [].slice.call(unitsToSelect).forEach(function (unit) {
-                unit.addEventListener('click', handleUnitChange);
-            });
-            popupElement = showPopup('Click somewhere on the road to get information about traffic flow data.');
-        }
-        function handleStyleSelect(event) {
-            config.style = baseStyle + event.value;
-            map.removeTier('trafficFlowTiles').then(function () {
-                return map.addTier(new tt.TrafficFlowTilesTier(config));
-            });
-        }
-        function handleUnitChange(event) {
-            unitValue = event.target.id;
-            handleTrafficFlowSegmentsRequest();
-        }
-
-        //get data about one segment of the road
-        function performTrafficFlowSegmentsData() {
-            //if (popupPosition === initMapCenter) {
-            //return Promise.reject();
-            //}
-
-            var callParameters = {
-                key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
-                point: trafficFlowPosition,
-                style: document.getElementById('trafficStyle').value,
-                unit: unitValue,
-                zoom: Math.floor(map.getZoom())
-            };
-            return tt.services.trafficFlowSegmentData(callParameters)
-                .go();
-        }
-        function shouldRequestBeAborted(event) {
-            if (!event && popupPosition !== initMapCenter) {
-                return false;
-            }
-            if ((!event || event.type !== 'click') && popupPosition === initMapCenter) {
-                return true;
-            }
-            if (event && event.type !== 'click' && map.getZoom() === maxZoomLevel) {
-                return true;
-            }
-            return event && event.type !== 'click' && isPositionIncorrect;
-        }
-        function showPopup(text) {
-            return new tt.Popup()
-                .setLngLat(popupPosition)
-                .setHTML('<div class="tt-pop-up-container">' +
+            isPositionIncorrect = true;
+            cleanMapData();
+            errorHint.setMessage(error.data.error);
+        });
+}
+function handleMapLoad() {
+    map.addTier(new tt.TrafficFlowTilesTier(config));
+    [].slice.call(unitsToSelect).forEach(function(unit) {
+        unit.addEventListener('click', handleUnitChange);
+    });
+    popupElement = showPopup('Click somewhere on the road to get information about traffic flow data.');
+}
+function handleStyleSelect(event) {
+    config.style = baseStyle + event.value;
+    map.removeTier('trafficFlowTiles').then(function() {
+        return map.addTier(new tt.TrafficFlowTilesTier(config));
+    });
+}
+function handleUnitChange(event) {
+    unitValue = event.target.id;
+    handleTrafficFlowSegmentsRequest();
+}
+function performTrafficFlowSegmentsData() {
+    if (popupPosition === initMapCenter) {
+        return Promise.reject();
+    }
+    var callParameters = {
+        key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
+        point: trafficFlowPosition,
+        style: document.getElementById('trafficStyle').value,
+        unit: unitValue,
+        zoom: Math.floor(map.getZoom())
+    };
+    return tt.services.trafficFlowSegmentData(callParameters)
+        .go();
+}
+function shouldRequestBeAborted(event) {
+    if (!event && popupPosition !== initMapCenter) {
+        return false;
+    }
+    if ((!event || event.type !== 'click') && popupPosition === initMapCenter) {
+        return true;
+    }
+    if (event && event.type !== 'click' && map.getZoom() === maxZoomLevel) {
+        return true;
+    }
+    return event && event.type !== 'click' && isPositionIncorrect;
+}
+function showPopup(text) {
+    return new tt.Popup()
+        .setLngLat(popupPosition)
+        .setHTML('<div class="tt-pop-up-container">' +
                     '<div class="pop-up-content">' +
-                    text +
+                        text +
                     '</div>' +
-                    '</div>')
-                .addTo(map);
-        }
+                '</div>')
+        .addTo(map);
+}
 
-        //LOGIC
-
-        {
-            var markersOnTheMap = {};
-            var eventListenersAdded = false;
-
-            //initial coords have to be random inside one city
-            var points = [
-                {
-                    coordinates: [-0.13389631465156526, 51.510387047712356],
-                    properties: {
-                        id: 1,
-                        name: 'A'
-                    }
-                },
-                {
-                    coordinates: [-0.16006956101645642, 51.50857706561709],
-                    properties: {
-                        id: 2,
-                        name: 'B'
-                    }
-                }
-            ];
-
-            var geoJson = {
-                type: 'FeatureCollection',
-                features: points.map(function (point) {
-                    return {
-                        type: 'Feature',
-                        geometry: {
-                            type: 'Point',
-                            coordinates: point.coordinates
-                        },
-                        properties: point.properties
-                    };
-                })
-            };
-
-            function showMarker(feature){
-                var id = parseInt(feature.properties.id, 10);
-                var newMarker = new tt.Marker().setLngLat(feature.geometry.coordinates);
-                        newMarker.addTo(map);
-                        // newMarker.getElement().innerHTML = ".";
-                        newMarker.setPopup(new tt.Popup({ offset: 30 })
-                            .setText(feature.properties.name));
-                        // newMarker.setPopup(moveMarker(feature.geometry.coordinates));
-                        markersOnTheMap[id] = newMarker;
-            }
-
-            //something like handleTrafficFlowSegmentsRequest()
-            function moveMarker(feature) {
-                console.count("times of another invocation");
-                trafficFlowPosition = feature.geometry.coordinates;
-                isPositionIncorrect = false;
-                performTrafficFlowSegmentsData()
-                    .then(function (response) {
-                        var flowSegmentData = response.flowSegmentData,
-                            coordinates = flowSegmentData.coordinates.coordinate,
-                            data = flowSegmentData,
-                            routeJson = convertToLineGeoJson(coordinates);
-
-                        // console.log(routeJson);
-                        errorHint.hide();
-                        cleanMapData();
-                        addLayer(routeJson);
-                        feature.geometry.coordinates = routeJson.geometry.coordinates[0];
-                        showMarker(feature);
-                    })
-                    .catch(function (error) {
-                        if (!error || !error.data) {
-                            return;
-                        }
-                        isPositionIncorrect = true;
-                        cleanMapData();
-                        errorHint.setMessage(error.data.error);
-                    });
-
-            }
-            time_step = 4.0;
-
-            function refreshMarkers() {
-                Object.keys(markersOnTheMap).forEach(function (id) {
-                    markersOnTheMap[id].remove();
-                    delete markersOnTheMap[id];
-                });
-                map.querySourceFeatures('point-source').forEach(function (feature) {
-                    if (feature.properties && !feature.properties.cluster) {
-                        var id = parseInt(feature.properties.id, 10);
-                        //here is simple markers
-                        if (!markersOnTheMap[id]) {
-                            //move
-                            if (time_step > 1.0) {
-                                moveMarker(feature);
-                                time_step = time_step - 1.0;
-
-                            }
-                            else
-                            showMarker(feature);
-                        }
-                    }
-                });
-            }
-
-            map.on('load', function () {
-                //source for clusters-circles calc
-                map.addSource('point-source', {
-                    type: 'geojson',
-                    data: geoJson,
-                    cluster: true,
-                    clusterMaxZoom: 10,
-                    clusterRadius: 50
-                });
-
-                map.addLayer({
-                    id: 'clusters',
-                    type: 'circle',
-                    source: 'point-source',
-                    filter: ['has', 'point_count'],
-                    paint: {
-                        'circle-color': [
-                            'step',
-                            ['get', 'point_count'],
-                            '#EC619F',
-                            4,
-                            '#008D8D',
-                            7,
-                            '#004B7F'
-                        ],
-                        'circle-radius': [
-                            'step',
-                            ['get', 'point_count'],
-                            15,
-                            4,
-                            20,
-                            7,
-                            25
-                        ],
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': 'white',
-                        'circle-stroke-opacity': 1
-                    }
-                });
-
-                //digits inside markers
-                map.addLayer({
-                    id: 'cluster-count',
-                    type: 'symbol',
-                    source: 'point-source',
-                    filter: ['has', 'point_count'],
-                    layout: {
-                        'text-field': '{point_count_abbreviated}',
-                        'text-size': 16
-                    },
-                    paint: {
-                        'text-color': 'white'
-                    }
-                });
-
-                map.on('data', function (e) {
-                    if (e.sourceId !== 'point-source' || !map.getSource('point-source').loaded()) {
-                        return;
-                    }
-
-                    refreshMarkers();
-
-                    if (!eventListenersAdded) {
-                        map.on('move', refreshMarkers);
-                        map.on('moveend', refreshMarkers);
-                        eventListenersAdded = true;
-                    }
-                });
-            });
-        }
-
-        //!LOGIC
-    </script>
-</body>
-
+</script>
+  </body>
 </html>
