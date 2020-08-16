@@ -2,3 +2,14 @@
 2.IN PROGRESS draw one circular marker whith a digit inside (https://developer.tomtom.com/maps-sdk-web-js/functional-examples#examples,map,markers-clustering.html) 
 3.DONE get all possible data about any segment on the road (https://developer.tomtom.com/maps-sdk-web-js/functional-examples#examples,map,traffic-flow-segments.html) 
 4. simulate traffic flow from one marker to another for some roads between them. Add area property to markers and brute force roads inside it? 
+
+First idea for simulation:
+array of points - cars on the roads. 
+//We don't need any cell simulation, b/c there are clusters, which calculate the amount of our cars automaticly
+Init positions of cars as random inside one city
+loop:
+  all we need is request data about flow of every road segment on cars poses and then move the car to next pos with the correlation of time and data
+endloop
+
+Possible problems: too much requests! wont it use full amount of free transactions?
+  
