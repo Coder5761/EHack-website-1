@@ -288,7 +288,7 @@
                 key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
                 center: initMapCenter,
                 container: 'map',
-                minZoom: 10,
+                minZoom: 2,
                 maxZoom: maxZoomLevel,
                 style: baseStyle + 'basic-main',
                 zoom: 35,
@@ -506,6 +506,7 @@
             var markersOnTheMap = {};
             var eventListenersAdded = false;
 
+            //initial coords have to be random inside one city
             var points = [
                 {
                     coordinates: [-0.13389631465156526, 51.510387047712356],
@@ -538,6 +539,7 @@
             };
 
             function showMarker(feature){
+                var id = parseInt(feature.properties.id, 10);
                 var newMarker = new tt.Marker().setLngLat(feature.geometry.coordinates);
                         newMarker.addTo(map);
                         // newMarker.getElement().innerHTML = ".";
@@ -576,7 +578,7 @@
                     });
 
             }
-            time_step = 2.0;
+            time_step = 4.0;
 
             function refreshMarkers() {
                 Object.keys(markersOnTheMap).forEach(function (id) {
@@ -594,7 +596,8 @@
                                 time_step = time_step - 1.0;
 
                             }
-
+                            else
+                            showMarker(feature);
                         }
                     }
                 });
