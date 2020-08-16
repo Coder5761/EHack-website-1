@@ -253,7 +253,6 @@
         }
         //!TIME
 
-        //TOMTOM
         function openCity(evt, cityName) {
             // Declare all variables
             var i, tabcontent, tablinks;
@@ -275,6 +274,7 @@
             evt.currentTarget.className += " active";
         }
 
+        //TOMTOM
         var baseStyle = 'tomtom://vector/1/',
             config = {
                 key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
@@ -288,12 +288,13 @@
                 key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
                 center: initMapCenter,
                 container: 'map',
-                minZoom: 2,
+                minZoom: 10,
                 maxZoom: maxZoomLevel,
                 style: baseStyle + 'basic-main',
                 zoom: 35,
                 dragPan: !isMobileOrTablet()
             });
+
         var errorHint = new InfoHint('error', 'bottom-center', 5000).addTo(document.getElementById('map')),
             formatters = Formatters,
             isPositionIncorrect,
@@ -407,6 +408,7 @@
         }
 
         function handleTrafficFlowSegmentsRequest(event) {
+            console.count("times of flow_seg_req envocation");
             if (shouldRequestBeAborted(event)) {
                 return;
             }
@@ -422,7 +424,7 @@
                         coordinates = flowSegmentData.coordinates.coordinate,
                         popupContent = generatePopupContent(flowSegmentData),
                         routeJson = convertToLineGeoJson(coordinates);
-                    console.log(routeJson);
+                    //console.log(routeJson);
 
                     errorHint.hide();
                     cleanMapData();
@@ -458,10 +460,13 @@
             unitValue = event.target.id;
             handleTrafficFlowSegmentsRequest();
         }
+
+        //get data about one segment of the road
         function performTrafficFlowSegmentsData() {
-            if (popupPosition === initMapCenter) {
-                return Promise.reject();
-            }
+            //if (popupPosition === initMapCenter) {
+            //return Promise.reject();
+            //}
+
             var callParameters = {
                 key: 'RnLDd6aMaEYMMekboyRZdOEaOk6zVpOn',
                 point: trafficFlowPosition,
@@ -496,132 +501,177 @@
         }
 
         //LOGIC
-        
+
         //markers-clusters
         {
-        var markersOnTheMap = {};
-        var eventListenersAdded = false;
-        
-        var points = [
-            {
-                coordinates: [-0.13389631465156526, 51.510387047712356],
-                properties: {
-                    id: 1,
-                    name: 'A'
-                }
-            },
-            {
-                coordinates: [-0.16006956101645642, 51.50857706561709],
-                properties: {
-                    id: 2,
-                    name: 'B'
-                }
-            }
-        ];
+            var markersOnTheMap = {};
+            var eventListenersAdded = false;
 
-        var geoJson = {
-            type: 'FeatureCollection',
-            features: points.map(function (point) {
-                return {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: point.coordinates
-                    },
-                    properties: point.properties
-                };
-            })
-        };
-
-        function refreshMarkers() {
-            Object.keys(markersOnTheMap).forEach(function (id) {
-                markersOnTheMap[id].remove();
-                delete markersOnTheMap[id];
-            });
-
-            map.querySourceFeatures('point-source').forEach(function (feature) {
-                if (feature.properties && !feature.properties.cluster) {
-                    var id = parseInt(feature.properties.id, 10);
-                    if (!markersOnTheMap[id]) {
-                        var newMarker = new tt.Marker().setLngLat(feature.geometry.coordinates);
-                        newMarker.addTo(map);
-                        newMarker.setPopup(new tt.Popup({ offset: 30 }).setText(feature.properties.name));
-                        markersOnTheMap[id] = newMarker;
+            var points = [
+                {
+                    coordinates: [-0.13389631465156526, 51.510387047712356],
+                    properties: {
+                        id: 1,
+                        name: 'A'
+                    }
+                },
+                {
+                    coordinates: [-0.16006956101645642, 51.50857706561709],
+                    properties: {
+                        id: 2,
+                        name: 'B'
                     }
                 }
+            ];
+
+            var geoJson = {
+                type: 'FeatureCollection',
+                features: points.map(function (point) {
+                    return {
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: point.coordinates
+                        },
+                        properties: point.properties
+                    };
+                })
+            };
+
+            function showMarker(feature){
+                var newMarker = new tt.Marker().setLngLat(feature.geometry.coordinates);
+                        newMarker.addTo(map);
+                        // newMarker.getElement().innerHTML = ".";
+                        newMarker.setPopup(new tt.Popup({ offset: 30 })
+                            .setText(feature.properties.name));
+                        // newMarker.setPopup(moveMarker(feature.geometry.coordinates));
+                        markersOnTheMap[id] = newMarker;
+            }
+
+            //something like handleTrafficFlowSegmentsRequest()
+            function moveMarker(feature) {
+                console.count("times of another envocation");
+                trafficFlowPosition = feature.geometry.coordinates;
+                isPositionIncorrect = false;
+                performTrafficFlowSegmentsData()
+                    .then(function (response) {
+                        var flowSegmentData = response.flowSegmentData,
+                            coordinates = flowSegmentData.coordinates.coordinate,
+                            data = flowSegmentData,
+                            routeJson = convertToLineGeoJson(coordinates);
+
+                        // console.log(routeJson);
+                        errorHint.hide();
+                        cleanMapData();
+                        addLayer(routeJson);
+                        feature.geometry.coordinates = routeJson.geometry.coordinates[0];
+                        showMarker(feature);
+                    })
+                    .catch(function (error) {
+                        if (!error || !error.data) {
+                            return;
+                        }
+                        isPositionIncorrect = true;
+                        cleanMapData();
+                        errorHint.setMessage(error.data.error);
+                    });
+
+            }
+            time_step = 2.0;
+
+            function refreshMarkers() {
+                Object.keys(markersOnTheMap).forEach(function (id) {
+                    markersOnTheMap[id].remove();
+                    delete markersOnTheMap[id];
+                });
+                map.querySourceFeatures('point-source').forEach(function (feature) {
+                    if (feature.properties && !feature.properties.cluster) {
+                        var id = parseInt(feature.properties.id, 10);
+                        //here is simple markers
+                        if (!markersOnTheMap[id]) {
+                            //move
+                            if (time_step > 1.0) {
+                                moveMarker(feature);
+                                time_step = time_step - 1.0;
+
+                            }
+
+                        }
+                    }
+                });
+            }
+
+            map.on('load', function () {
+                //source for clusters-circles calc
+                map.addSource('point-source', {
+                    type: 'geojson',
+                    data: geoJson,
+                    cluster: true,
+                    clusterMaxZoom: 10,
+                    clusterRadius: 50
+                });
+
+                map.addLayer({
+                    id: 'clusters',
+                    type: 'circle',
+                    source: 'point-source',
+                    filter: ['has', 'point_count'],
+                    paint: {
+                        'circle-color': [
+                            'step',
+                            ['get', 'point_count'],
+                            '#EC619F',
+                            4,
+                            '#008D8D',
+                            7,
+                            '#004B7F'
+                        ],
+                        'circle-radius': [
+                            'step',
+                            ['get', 'point_count'],
+                            15,
+                            4,
+                            20,
+                            7,
+                            25
+                        ],
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': 'white',
+                        'circle-stroke-opacity': 1
+                    }
+                });
+
+                //digits inside markers
+                map.addLayer({
+                    id: 'cluster-count',
+                    type: 'symbol',
+                    source: 'point-source',
+                    filter: ['has', 'point_count'],
+                    layout: {
+                        'text-field': '{point_count_abbreviated}',
+                        'text-size': 16
+                    },
+                    paint: {
+                        'text-color': 'white'
+                    }
+                });
+
+                map.on('data', function (e) {
+                    if (e.sourceId !== 'point-source' || !map.getSource('point-source').loaded()) {
+                        return;
+                    }
+
+                    refreshMarkers();
+
+                    if (!eventListenersAdded) {
+                        map.on('move', refreshMarkers);
+                        map.on('moveend', refreshMarkers);
+                        eventListenersAdded = true;
+                    }
+                });
             });
         }
 
-        map.on('load', function () {
-            map.addSource('point-source', {
-                type: 'geojson',
-                data: geoJson,
-                cluster: true,
-                clusterMaxZoom: 14,
-                clusterRadius: 50
-            });
-
-            map.addLayer({
-                id: 'clusters',
-                type: 'circle',
-                source: 'point-source',
-                filter: ['has', 'point_count'],
-                paint: {
-                    'circle-color': [
-                        'step',
-                        ['get', 'point_count'],
-                        '#EC619F',
-                        4,
-                        '#008D8D',
-                        7,
-                        '#004B7F'
-                    ],
-                    'circle-radius': [
-                        'step',
-                        ['get', 'point_count'],
-                        15,
-                        4,
-                        20,
-                        7,
-                        25
-                    ],
-                    'circle-stroke-width': 1,
-                    'circle-stroke-color': 'white',
-                    'circle-stroke-opacity': 1
-                }
-            });
-
-            //digits inside markers
-            map.addLayer({
-                id: 'cluster-count',
-                type: 'symbol',
-                source: 'point-source',
-                filter: ['has', 'point_count'],
-                layout: {
-                    'text-field': '{point_count_abbreviated}',
-                    'text-size': 16
-                },
-                paint: {
-                    'text-color': 'white'
-                }
-            });
-
-            map.on('data', function (e) {
-                if (e.sourceId !== 'point-source' || !map.getSource('point-source').loaded()) {
-                    return;
-                }
-
-                refreshMarkers();
-
-                if (!eventListenersAdded) {
-                    map.on('move', refreshMarkers);
-                    map.on('moveend', refreshMarkers);
-                    eventListenersAdded = true;
-                }
-            });
-        });
-    }
-    
         //!LOGIC
     </script>
 </body>
