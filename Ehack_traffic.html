@@ -408,7 +408,7 @@
         }
 
         function handleTrafficFlowSegmentsRequest(event) {
-            console.count("times of flow_seg_req envocation");
+            console.count("times of flow_seg_req invocation");
             if (shouldRequestBeAborted(event)) {
                 return;
             }
@@ -502,7 +502,6 @@
 
         //LOGIC
 
-        //markers-clusters
         {
             var markersOnTheMap = {};
             var eventListenersAdded = false;
@@ -550,7 +549,7 @@
 
             //something like handleTrafficFlowSegmentsRequest()
             function moveMarker(feature) {
-                console.count("times of another envocation");
+                console.count("times of another invocation");
                 trafficFlowPosition = feature.geometry.coordinates;
                 isPositionIncorrect = false;
                 performTrafficFlowSegmentsData()
